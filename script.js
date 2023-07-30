@@ -1,4 +1,8 @@
 const urlAllPosts = "https://jsonplaceholder.typicode.com/posts"
+const postsWillLoad = 10
+let loadedPosts = 0
+
+const userUrl = "https://jsonplaceholder.typicode.com/users"
 
 const main = document.getElementById('main')
 const button = document.getElementById('button')
@@ -6,12 +10,14 @@ button.style.backgroundColor = 'red'
 
 //const article = document.getElementById('article')
 
-button.addEventListener('click', createArticle)
+button.addEventListener('click', () => {
+    loadPosts(postsWillLoad, loadedPosts)
+})
 
 
-function createArticle(title) {
-
+function createArticle(title, id) {
     const importTitle = title
+    const importID = id
 
     const article = document.createElement('article');
     article.style.display = 'flex'
@@ -33,6 +39,13 @@ function createArticle(title) {
     btn.innerText = 'open article'
     btn.classList.add('btn')
     btn.classList.add('btn-primary')
+    btn.setAttribute("id", `id${importID}`);
+    btn.addEventListener('click',() => {
+        loadInfoPost(importID)
+    } )
+
+    const idNumber = document.createElement('p')
+    idNumber.textContent = importID
 
     const deletePost_btn = document.createElement('button')
     deletePost_btn.innerText = 'delete post'
@@ -47,7 +60,7 @@ function createArticle(title) {
     editPost_btn.classList.add('btn-warning')
     editPost_btn.style.margin = '0.5rem'
 
-   
+    div1.appendChild(idNumber)
     div1.appendChild(blogTitle)
     div1.appendChild(btn)
 
@@ -62,16 +75,53 @@ function createArticle(title) {
     main.appendChild(article)
 }
 
+function createPost(post) {
+   const postInfo = post
+   console.log('user ID= '+post.userId)
+}
 
+function loadPosts(numberOfPosts, firstID) {
 
-fetch(urlAllPosts)
-  .then((response) => response.json())
-  .then((json) => {
-    
-    for(let article of json) {
-        createArticle(article.title)
+    let url = urlAllPosts+ "?_limit="+numberOfPosts
+    console.log('loaded posts before= '+firstID)
+    if (firstID != 0) {
+        url = urlAllPosts+ "?_limit="+numberOfPosts+"&after_id="+firstID
     }
-    console.log(json)
+    console.log('feth url= '+url)
+       
+    fetch(url)
+        .then((response) => response.json())
+        .then((json) => {
+            
+            for(let article of json) {
+                createArticle(article.title, article.id)
+            }
+            loadedPosts += numberOfPosts
+            
+            console.log(json)
 
-});
-  
+            
+            console.log('number of articles= '+json.length)
+            console.log('number of posts loaded= '+loadedPosts)
+        }
+    );
+}
+
+
+function loadInfoPost(id) {
+    
+    let url = urlAllPosts+"/"+id
+    fetch(url)
+        .then((response) => response.json())
+        .then((json) => {
+            createPost(json)
+            console.log(json)
+            loadUserInfo(json.userId)
+        }
+    );
+}
+
+function loadUserInfo(userId) {
+    const url = userUrl+'/'+userId
+    console.log(url)
+}
