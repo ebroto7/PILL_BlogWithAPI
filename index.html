@@ -14,12 +14,28 @@
         <button type="button" id="button"> button</button>
     </header>
     <main id="main">
+<!-- Blog article Modal  -->
+        <div class="modal fade" id="blogArticleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+                <div class="modal-body" id="modalUser">
+                    <h2>USER</h2>
+                    <p id="userName"></p>
+                    <p id="userMail"></p>
 
-       
-
-
-
-       
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Understood</button>
+                </div>
+            </div>
+            </div>
+        </div>
     </main>
     
     <script src="script.js"></script>

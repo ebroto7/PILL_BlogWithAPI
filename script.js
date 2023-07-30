@@ -5,6 +5,7 @@ let loadedPosts = 0
 const userUrl = "https://jsonplaceholder.typicode.com/users"
 
 const main = document.getElementById('main')
+const postMain = document.getElementById('blogArticleModal')
 const button = document.getElementById('button')
 button.style.backgroundColor = 'red'
 
@@ -40,9 +41,13 @@ function createArticle(title, id) {
     btn.classList.add('btn')
     btn.classList.add('btn-primary')
     btn.setAttribute("id", `id${importID}`);
-    btn.addEventListener('click',() => {
+    btn.setAttribute("data-bs-toggle", "modal");
+    btn.setAttribute("data-bs-target", "#blogArticleModal" );
+
+    btn.addEventListener('click', () => {
         loadInfoPost(importID)
-    } )
+    })
+ 
 
     const idNumber = document.createElement('p')
     idNumber.textContent = importID
@@ -76,8 +81,14 @@ function createArticle(title, id) {
 }
 
 function createPost(post) {
-   const postInfo = post
-   console.log('user ID= '+post.userId)
+    const postInfo = post
+    
+    const articleTitle = document.getElementById('staticBackdropLabel')
+    articleTitle.innerHTML = post.title
+
+    const articleBody = document.getElementById('modalBody')
+    articleBody.innerHTML = post.body
+   
 }
 
 function loadPosts(numberOfPosts, firstID) {
@@ -116,12 +127,29 @@ function loadInfoPost(id) {
         .then((json) => {
             createPost(json)
             console.log(json)
+
             loadUserInfo(json.userId)
         }
     );
 }
 
-function loadUserInfo(userId) {
-    const url = userUrl+'/'+userId
-    console.log(url)
+function loadUserInfo(userId) {  
+
+    let url = userUrl+"/"+userId
+    fetch(url)
+        .then((response) => response.json())
+        .then((json) => {
+            putInfoUser(json)
+            console.log(json)
+        }
+    );
+
+}
+
+function putInfoUser(user) {
+    const userName = document.getElementById('userName')
+    userName.innerHTML = user.name
+    const userMail = document.getElementById('userMail')
+    userMail.innerHTML = user.email
+
 }
