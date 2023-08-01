@@ -1,9 +1,13 @@
 const urlAllPosts = "https://jsonplaceholder.typicode.com/posts"
 const postsWillLoad = 10
 let loadedPosts = 0
-calculateTotalNumOfPosts()
 let totalNumOfPosts;
-
+fetch(urlAllPosts)
+        .then((response) => response.json())
+        .then((json) => {
+            totalNumOfPosts = json.length
+        }
+);
 
 const userUrl = "https://jsonplaceholder.typicode.com/users"
 const commentsUrl = "https://jsonplaceholder.typicode.com/comments"
@@ -21,21 +25,10 @@ let openComments = true
 
 loadPostbutton.addEventListener('click', () => {
     loadPosts(postsWillLoad, loadedPosts)
-    
 })
 commentsBtn.addEventListener('click', () => {
      openCloseComments()
 })
-
-function calculateTotalNumOfPosts() {
-    fetch(urlAllPosts)
-        .then((response) => response.json())
-        .then((json) => {
-            totalNumOfPosts = json.length   
-        }
-    );
-    
-}
 
 function openCloseComments() {
     if (openComments) {
@@ -130,20 +123,19 @@ function loadPosts(numberOfPosts, firstID) {
             for(let article of json) {
                 createArticle(article)
             }
-            numOfPosts = json.length
             loadedPosts += numberOfPosts
+            changeLoadPostButton(loadedPosts, totalNumOfPosts)
         }
     );
 }
 
-function changeLoadPostButton(number, total) {
-    loadPostbutton.style.backgroundColor = 'green'
-    if (number < total) {
-        loadPostbutton.style.backgroundColor = 'green'
+function changeLoadPostButton(loadedPosts, totalPosts) {
+    if (loadedPosts < totalPosts) {
         loadPostbutton.innerHTML = 'Load more posts'
-    } else if (number > total) {
-        loadPostbutton.style.backgroundColor = 'red'
-        loadPostbutton.disabled = false
+    } else if (loadedPosts >= totalPosts) {
+        loadPostbutton.disabled = true
+        loadPostbutton.innerHTML = 'No more posts'
+
     }
 }
 
@@ -179,6 +171,8 @@ function loadPostComments(postID) {
     fetch(url)
         .then((response) => response.json())
         .then((json) =>  {
+            console.log(json.length)
+            console.log(url)
             if (json.length === undefined){
                 createComment(json)
             } else {
