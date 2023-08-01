@@ -1,1 +1,35 @@
 
+.commentTitle {
+    font-weight: bold;
+}
+.blogPostArticle {
+    display: flex;
+    justify-content: space-between;
+
+    margin: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid black;
+    border-radius: 1rem;
+
+    background-color: lightgreen;
+}
+
+.postButtonsStack {
+    display: block;
+    align-items: Center;
+    justify-content: center;
+}
+.loadPostbutton_container {
+    display: flex;
+    justify-content: center;
+}
+#loadPostbutton {
+    width: 10rem;
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+}
+
+.commentArticleContainer {
+    padding: 1rem;
+}

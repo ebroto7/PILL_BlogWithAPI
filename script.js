@@ -1,39 +1,70 @@
 const urlAllPosts = "https://jsonplaceholder.typicode.com/posts"
 const postsWillLoad = 10
 let loadedPosts = 0
+calculateTotalNumOfPosts()
+let totalNumOfPosts;
+
 
 const userUrl = "https://jsonplaceholder.typicode.com/users"
+const commentsUrl = "https://jsonplaceholder.typicode.com/comments"
 
 const main = document.getElementById('main')
 const postMain = document.getElementById('blogArticleModal')
-const button = document.getElementById('button')
-button.style.backgroundColor = 'red'
+const loadPostbutton = document.getElementById('loadPostbutton')
+const commentsBtn = document.getElementById('commentsBtn')
+commentsBtn.style.width = '10rem'
+commentsBtn.style.justifyContent = 'center'
+const commentContainer = document.getElementById('modalComments__body')
+let postIDComments;
+const btn_closeModal = document.querySelector('.btn_closeModal')
+let openComments = true
 
-//const article = document.getElementById('article')
-
-button.addEventListener('click', () => {
+loadPostbutton.addEventListener('click', () => {
     loadPosts(postsWillLoad, loadedPosts)
+    
+})
+commentsBtn.addEventListener('click', () => {
+     openCloseComments()
 })
 
+function calculateTotalNumOfPosts() {
+    fetch(urlAllPosts)
+        .then((response) => response.json())
+        .then((json) => {
+            totalNumOfPosts = json.length   
+        }
+    );
+    
+}
 
-function createArticle(title, id) {
-    const importTitle = title
-    const importID = id
+function openCloseComments() {
+    if (openComments) {
+        closeComents()
+    } else {
+        commentContainer.replaceChildren()
+        loadPostComments(postIDComments)
+        openComments = true
+        commentsBtn.innerText = 'Close Comments'
+    }
+}
+function closeComents() {
+    commentContainer.replaceChildren()
+    openComments = false
+    commentsBtn.innerText = 'Load Comments'
+}
 
-    const article = document.createElement('article');
-    article.style.display = 'flex'
-    article.style.justifyContent = 'space-between'
+function createArticle(article) {
+    const importTitle = article.title
+    const importID = article.id
+    
+    const post = document.createElement('article');
+    post.classList.add('blogPostArticle')
+  
     const div1 = document.createElement('div')
     const div2 = document.createElement('div')
-    div2.style.display = 'block'
-    div2.style.alignItems = 'center'
-    div2.style.justifyContent = 'center'
+    div2.classList.add('postButtonsStack')
 
-    article.style.backgroundColor = 'lightgreen'
-    article.style.margin = '1rem'
-    article.style.padding = '0.2rem'
-
-    const blogTitle = document.createElement('h3');
+    const blogTitle = document.createElement('h4');
     blogTitle.innerText = importTitle
 
     const btn = document.createElement('button')
@@ -46,8 +77,11 @@ function createArticle(title, id) {
 
     btn.addEventListener('click', () => {
         loadInfoPost(importID)
+        loadUserInfo(article.userId)
+        postIDComments = importID
+        openComments = false
+        closeComents()
     })
- 
 
     const idNumber = document.createElement('p')
     idNumber.textContent = importID
@@ -58,7 +92,6 @@ function createArticle(title, id) {
     deletePost_btn.classList.add('btn-danger')
     deletePost_btn.style.margin = '0.5rem'
 
-
     const editPost_btn = document.createElement('button')
     editPost_btn.innerText = 'edit post'
     editPost_btn.classList.add('btn')
@@ -68,16 +101,11 @@ function createArticle(title, id) {
     div1.appendChild(idNumber)
     div1.appendChild(blogTitle)
     div1.appendChild(btn)
-
     div2.appendChild(editPost_btn)
     div2.appendChild(deletePost_btn)
-
-
-    article.appendChild(div1)
-    article.appendChild(div2)
-
-    
-    main.appendChild(article)
+    post.appendChild(div1)
+    post.appendChild(div2)
+    main.appendChild(post)
 }
 
 function createPost(post) {
@@ -88,62 +116,55 @@ function createPost(post) {
 
     const articleBody = document.getElementById('modalBody')
     articleBody.innerHTML = post.body
-   
 }
 
 function loadPosts(numberOfPosts, firstID) {
-
     let url = urlAllPosts+ "?_limit="+numberOfPosts
-    console.log('loaded posts before= '+firstID)
     if (firstID != 0) {
-        url = urlAllPosts+ "?_limit="+numberOfPosts+"&after_id="+firstID
+        url = `${urlAllPosts}?_start=${firstID}&_limit=${numberOfPosts})`
     }
-    console.log('feth url= '+url)
        
     fetch(url)
         .then((response) => response.json())
         .then((json) => {
-            
             for(let article of json) {
-                createArticle(article.title, article.id)
+                createArticle(article)
             }
+            numOfPosts = json.length
             loadedPosts += numberOfPosts
-            
-            console.log(json)
-
-            
-            console.log('number of articles= '+json.length)
-            console.log('number of posts loaded= '+loadedPosts)
         }
     );
 }
 
+function changeLoadPostButton(number, total) {
+    loadPostbutton.style.backgroundColor = 'green'
+    if (number < total) {
+        loadPostbutton.style.backgroundColor = 'green'
+        loadPostbutton.innerHTML = 'Load more posts'
+    } else if (number > total) {
+        loadPostbutton.style.backgroundColor = 'red'
+        loadPostbutton.disabled = false
+    }
+}
 
 function loadInfoPost(id) {
-    
     let url = urlAllPosts+"/"+id
     fetch(url)
         .then((response) => response.json())
         .then((json) => {
             createPost(json)
-            console.log(json)
-
-            loadUserInfo(json.userId)
         }
     );
 }
 
 function loadUserInfo(userId) {  
-
     let url = userUrl+"/"+userId
     fetch(url)
         .then((response) => response.json())
         .then((json) => {
             putInfoUser(json)
-            console.log(json)
         }
     );
-
 }
 
 function putInfoUser(user) {
@@ -151,5 +172,37 @@ function putInfoUser(user) {
     userName.innerHTML = user.name
     const userMail = document.getElementById('userMail')
     userMail.innerHTML = user.email
+}
 
+function loadPostComments(postID) {
+    const url = urlAllPosts+'/'+postID+'/comments'
+    fetch(url)
+        .then((response) => response.json())
+        .then((json) =>  {
+            if (json.length === undefined){
+                createComment(json)
+            } else {
+                for(let comment of json) {
+                    createComment(comment)
+                }
+            }
+        }
+    );
+}
+
+function createComment(comment) {
+    const commentArticleContainer = document.createElement('article');
+    commentArticleContainer.classList.add('commentArticleContainer')
+    const commentTitle = document.createElement('h6');
+    commentTitle.classList.add('commentTitle')
+    commentTitle.innerText = comment.name
+    const commentBody = document.createElement('p');
+    commentBody.innerText = comment.body
+    const commentEmail = document.createElement('p');
+    commentEmail.innerText = comment.email
+
+    commentArticleContainer.appendChild(commentTitle)
+    commentArticleContainer.appendChild(commentBody)
+    commentArticleContainer.appendChild(commentEmail)
+    commentContainer.appendChild(commentArticleContainer)
 }
