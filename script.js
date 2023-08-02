@@ -1,4 +1,5 @@
-const urlAllPosts = "https://jsonplaceholder.typicode.com/posts"
+// const urlAllPosts = "https://jsonplaceholder.typicode.com/posts"
+const urlAllPosts = "http://localhost:3000/posts"
 const postsWillLoad = 10
 let loadedPosts = 0
 let totalNumOfPosts;
@@ -9,8 +10,10 @@ fetch(urlAllPosts)
         }
 );
 
-const userUrl = "https://jsonplaceholder.typicode.com/users"
-const commentsUrl = "https://jsonplaceholder.typicode.com/comments"
+// const userUrl = "https://jsonplaceholder.typicode.com/users"
+const userUrl = "  http://localhost:3000/users"
+// const commentsUrl = "https://jsonplaceholder.typicode.com/comments"
+const commentsUrl = "http://localhost:3000/comments"
 
 const main = document.getElementById('main')
 const postMain = document.getElementById('blogArticleModal')
